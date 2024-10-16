@@ -2,17 +2,40 @@ import React, { useEffect, useState } from "react";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const productsFiltered = e => {
+    if (e.target.value === "") {
+      setFilteredProducts(products);
+    }
+    else {
+      setFilteredProducts(products.filter(product =>
+        product.title.toLowerCase().includes(e.target.value.toLowerCase())
+      ));
+    }
+
+  }
 
   useEffect(() => {
     fetch('https://dummyjson.com/products')
       .then(response => response.json())
-      .then(data => setProducts(data.products));
+      .then(data => {
+        setProducts(data.products);
+        setFilteredProducts(data.products);
+      });
   }, []);
+
 
   return (
     <>
+      <input
+        type="text"
+        placeholder="Search products..."
+        className="border p-2 rounded w-full"
+        onChange={productsFiltered}
+      />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-        {products.map(product => (
+        {filteredProducts.map(product => (
           <div key={product.id} className="card card-compact bg-base-100 w-96 shadow-xl">
             <figure>
               <img
