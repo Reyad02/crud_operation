@@ -12,6 +12,7 @@ const ProductList = () => {
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [productImage, setProductImage] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc"); // New state for sort order
 
   const productsFiltered = (e) => {
     if (e.target.value === "") {
@@ -25,6 +26,17 @@ const ProductList = () => {
     }
   };
 
+  const sortProducts = (order) => {
+    const sortedProducts = [...filteredProducts].sort((a, b) => {
+      if (order === "asc") {
+        return a.price - b.price; 
+      } else {
+        return b.price - a.price; 
+      }
+    });
+    setFilteredProducts(sortedProducts);
+  };
+
   useEffect(() => {
     fetch("https://dummyjson.com/products")
       .then((response) => response.json())
@@ -35,7 +47,7 @@ const ProductList = () => {
   }, []);
 
   const deleteProduct = (id) => {
-    const updatedProducts = products.filter((product) => product.id !== id);
+    const updatedProducts = filteredProducts.filter((product) => product.id !== id);
     setProducts(updatedProducts);
     setFilteredProducts(updatedProducts);
   };
@@ -60,7 +72,7 @@ const ProductList = () => {
   };
 
   const updateProduct = () => {
-    const updatedProducts = products.map((product) =>
+    const updatedProducts = filteredProducts.map((product) =>
       product.id === selectedProduct.id
         ? { ...product, title: productTitle, description: productDescription, price: productPrice, thumbnail: productImage }
         : product
@@ -79,7 +91,7 @@ const ProductList = () => {
       thumbnail: productImage,
     };
 
-    const updatedProducts = [newProduct, ...products];
+    const updatedProducts = [newProduct, ...filteredProducts];
     setProducts(updatedProducts);
     setFilteredProducts(updatedProducts);
     setIsModalOpen(false);
@@ -95,19 +107,36 @@ const ProductList = () => {
 
   return (
     <>
-      <div className="flex gap-10">
-        <input
-          type="text"
-          placeholder="Search products..."
-          className="border p-2 rounded w-full"
-          onChange={productsFiltered}
-        />
-        <Button text="Add Product" onClick={openAddModal} />
+      <input
+        type="text"
+        placeholder="Search products..."
+        className="border p-2 rounded w-full"
+        onChange={productsFiltered}
+      />
+      <div className="flex  gap-4 items-center justify-center">
+        <div className="mt-2">
+          <Button text="Add Product" onClick={openAddModal} />
+        </div>
+        <div className="flex gap-2 mt-4 items-center justify-center">
+          <label htmlFor="sortOrder" className="">Sort by Price:</label>
+          <select
+            id="sortOrder"
+            value={sortOrder}
+            onChange={(e) => {
+              setSortOrder(e.target.value);
+              sortProducts(e.target.value);
+            }}
+            className="border p-2 rounded"
+          >
+            <option value="asc">Low to High</option>
+            <option value="desc">High to Low</option>
+          </select>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 gap-x-20 border border-red-700">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 gap-x-20 ">
         {filteredProducts.map((product) => (
-          <div key={product.id} className="card card-compact bg-base-100 shadow-xl border border-blue-500">
+          <div key={product.id} className="card card-compact bg-base-100 shadow-xl ">
             <figure>
               <img src={product.thumbnail} alt={product.title} />
             </figure>
