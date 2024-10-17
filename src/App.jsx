@@ -50,6 +50,15 @@ const ProductList = () => {
     setIsModalOpen(true);
   };
 
+  const openAddModal = () => {
+    setModalMode("Add");
+    setProductTitle("");
+    setProductDescription("");
+    setProductPrice("");
+    setProductImage("");
+    setIsModalOpen(true);
+  };
+
   const updateProduct = () => {
     const updatedProducts = products.map((product) =>
       product.id === selectedProduct.id
@@ -61,23 +70,44 @@ const ProductList = () => {
     setIsModalOpen(false);
   };
 
+  const addProduct = () => {
+    const newProduct = {
+      id: Date.now(),
+      title: productTitle,
+      description: productDescription,
+      price: productPrice,
+      thumbnail: productImage,
+    };
+
+    const updatedProducts = [newProduct, ...products];
+    setProducts(updatedProducts);
+    setFilteredProducts(updatedProducts);
+    setIsModalOpen(false);
+  };
+
   const handleSubmit = () => {
-    if (modalMode === "Update") {
+    if (modalMode === "Add") {
+      addProduct();
+    } else if (modalMode === "Update") {
       updateProduct();
     }
   };
 
   return (
     <>
-      <input
-        type="text"
-        placeholder="Search products..."
-        className="border p-2 rounded w-full"
-        onChange={productsFiltered}
-      />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+      <div className="flex gap-10">
+        <input
+          type="text"
+          placeholder="Search products..."
+          className="border p-2 rounded w-full"
+          onChange={productsFiltered}
+        />
+        <Button text="Add Product" onClick={openAddModal} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 gap-x-20 border border-red-700">
         {filteredProducts.map((product) => (
-          <div key={product.id} className="card card-compact bg-base-100 w-96 shadow-xl">
+          <div key={product.id} className="card card-compact bg-base-100 shadow-xl border border-blue-500">
             <figure>
               <img src={product.thumbnail} alt={product.title} />
             </figure>
@@ -98,7 +128,7 @@ const ProductList = () => {
 
       {isModalOpen && (
         <Modal
-          title={modalMode === "Update" ? "Update Product" : "Add New Product"}
+          title={modalMode === "Add" ? "Add New Product" : "Update Product"}
           productTitle={productTitle}
           setProductTitle={setProductTitle}
           productDescription={productDescription}
