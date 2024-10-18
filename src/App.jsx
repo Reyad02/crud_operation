@@ -127,88 +127,89 @@ const ProductList = () => {
   };
 
   return (
-    <>
-      <input
-        type="text"
-        placeholder="Search products..."
-        className="border p-2 rounded w-full"
-        onChange={productsFiltered}
-      />
-      <div className="flex gap-4 items-center justify-center">
-        <div className="mt-4">
-          <Button text="Add Product" onClick={openAddModal} />
-        </div>
-        <div className="flex gap-2 mt-4 items-center justify-center">
-          <label htmlFor="sortOrder">Sort by Price:</label>
-          <select
-            id="sortOrder"
-            value={sortOrder}
-            onChange={(e) => {
-              setSortOrder(e.target.value);
-              sortProducts(e.target.value);
-            }}
-            className="border p-2 rounded"
-          >
-            <option value="asc">Low to High</option>
-            <option value="desc">High to Low</option>
-          </select>
+    <div className="bg-base-200">
+      <div className="max-w-7xl mx-auto pt-2 ">
+        <input
+          type="text"
+          placeholder="Search products..."
+          className="border border-gray-400 p-2 rounded-md w-full"
+          onChange={productsFiltered}
+        />
+        <div className="flex gap-4 items-center justify-center">
+          <div className="mt-4">
+            <Button text="Add Product" onClick={openAddModal} />
+          </div>
+          <div className="flex gap-2 mt-4 items-center justify-center">
+            <label htmlFor="sortOrder">Sort by Price:</label>
+            <select
+              id="sortOrder"
+              value={sortOrder}
+              onChange={(e) => {
+                setSortOrder(e.target.value);
+                sortProducts(e.target.value);
+              }}
+              className="border border-gray-400 p-2 rounded"
+            >
+              <option value="asc">Low to High</option>
+              <option value="desc">High to Low</option>
+            </select>
+          </div>
+
+          <div className="flex gap-2 mt-4 items-center justify-center">
+            <span>Filter by Category:</span>
+            <select
+              value={selectedCategory}
+              onChange={categoryChanged}
+              className="border border-gray-400 p-2 rounded"
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Category Filter Dropdown */}
-        <div className="flex gap-2 mt-4 items-center justify-center">
-          <span>Filter by Category:</span>
-          <select
-            value={selectedCategory}
-            onChange={categoryChanged}
-            className="border p-2 rounded"
-          >
-            <option value="">All Categories</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 gap-x-20">
-        {filteredProducts.map((product) => (
-          <div key={product.id} className="card card-compact bg-base-100 shadow-xl">
-            <figure>
-              <img src={product.thumbnail} alt={product.title} />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title">
-                {product.title}
-                <div className="badge badge-secondary">${product.price}</div>
-              </h2>
-              <p>{product.description}</p>
-              <div className="card-actions justify-center">
-                <Button text="Delete" onClick={() => deleteProduct(product.id)} />
-                <Button text="Update" onClick={() => openUpdateModal(product)} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 gap-x-20">
+          {filteredProducts.map((product) => (
+            <div key={product.id} className="card card-compact bg-base-100 shadow-xl border border-gray-400">
+              <figure>
+                <img src={product.thumbnail} alt={product.title} />
+              </figure>
+              <div className="card-body">
+                <h2 className="card-title">
+                  {product.title}
+                  <div className="badge badge-accent badge-outline">${product.price}</div>
+                </h2>
+                <p>{product.description}</p>
+                <div className="card-actions justify-center">
+                  <Button text="Delete" onClick={() => deleteProduct(product.id)} />
+                  <Button text="Update" onClick={() => openUpdateModal(product)} />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {isModalOpen && (
-        <Modal
-          title={modalMode === "Add" ? "Add New Product" : "Update Product"}
-          productTitle={productTitle}
-          setProductTitle={setProductTitle}
-          productDescription={productDescription}
-          setProductDescription={setProductDescription}
-          productPrice={productPrice}
-          setProductPrice={setProductPrice}
-          productImage={productImage}
-          setProductImage={setProductImage}
-          handleSubmit={handleSubmit}
-          closeModal={() => setIsModalOpen(false)}
-        />
-      )}
-    </>
+        {isModalOpen && (
+          <Modal
+            title={modalMode === "Add" ? "Add New Product" : "Update Product"}
+            productTitle={productTitle}
+            setProductTitle={setProductTitle}
+            productDescription={productDescription}
+            setProductDescription={setProductDescription}
+            productPrice={productPrice}
+            setProductPrice={setProductPrice}
+            productImage={productImage}
+            setProductImage={setProductImage}
+            handleSubmit={handleSubmit}
+            closeModal={() => setIsModalOpen(false)}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 
