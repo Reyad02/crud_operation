@@ -45,8 +45,3 @@ A simple product list application built with React, allowing users to manage pro
 Start the development server:
   ```bash
    npm start
-
-
-
-
-
