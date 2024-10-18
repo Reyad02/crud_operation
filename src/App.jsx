@@ -12,7 +12,20 @@ const ProductList = () => {
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [productImage, setProductImage] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc"); // New state for sort order
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  useEffect(() => {
+    fetch("https://dummyjson.com/products")
+      .then((response) => response.json())
+      .then((data) => {
+        setProducts(data.products);
+        setFilteredProducts(data.products);
+        const uniqueCategories = [...new Set(data.products.map(product => product.category))];
+        setCategories(uniqueCategories);
+      });
+  }, []);
 
   const productsFiltered = (e) => {
     if (e.target.value === "") {
@@ -28,28 +41,32 @@ const ProductList = () => {
 
   const sortProducts = (order) => {
     const sortedProducts = [...filteredProducts].sort((a, b) => {
-      if (order === "asc") {
-        return a.price - b.price; 
-      } else {
-        return b.price - a.price; 
-      }
+      return order === "asc" ? a.price - b.price : b.price - a.price;
     });
     setFilteredProducts(sortedProducts);
   };
 
-  useEffect(() => {
-    fetch("https://dummyjson.com/products")
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data.products);
-        setFilteredProducts(data.products);
-      });
-  }, []);
+  const categoryChanged = (e) => {
+    const category = e.target.value;
+    setSelectedCategory(category);
+
+    if (category) {
+      const updatedFilteredProducts = products.filter(product => product.category === category);
+      setFilteredProducts(updatedFilteredProducts);
+    } else {
+      setFilteredProducts(products);
+    }
+  }
 
   const deleteProduct = (id) => {
-    const updatedProducts = filteredProducts.filter((product) => product.id !== id);
+    const updatedProducts = products.filter((product) => product.id !== id);
     setProducts(updatedProducts);
-    setFilteredProducts(updatedProducts);
+    if (selectedCategory) {
+      const updatedFilteredProducts = updatedProducts.filter((product) => product.category === selectedCategory);
+      setFilteredProducts(updatedFilteredProducts);
+    } else {
+      setFilteredProducts(updatedProducts);
+    }
   };
 
   const openUpdateModal = (product) => {
@@ -72,13 +89,18 @@ const ProductList = () => {
   };
 
   const updateProduct = () => {
-    const updatedProducts = filteredProducts.map((product) =>
+    const updatedProducts = products.map((product) =>
       product.id === selectedProduct.id
         ? { ...product, title: productTitle, description: productDescription, price: productPrice, thumbnail: productImage }
         : product
     );
     setProducts(updatedProducts);
-    setFilteredProducts(updatedProducts);
+    if (selectedCategory) {
+      const updatedFilteredProducts = updatedProducts.filter((product) => product.category === selectedCategory);
+      setFilteredProducts(updatedFilteredProducts);
+    } else {
+      setFilteredProducts(updatedProducts);
+    }
     setIsModalOpen(false);
   };
 
@@ -90,8 +112,7 @@ const ProductList = () => {
       price: productPrice,
       thumbnail: productImage,
     };
-
-    const updatedProducts = [newProduct, ...filteredProducts];
+    const updatedProducts = [newProduct, ...products];
     setProducts(updatedProducts);
     setFilteredProducts(updatedProducts);
     setIsModalOpen(false);
@@ -113,12 +134,12 @@ const ProductList = () => {
         className="border p-2 rounded w-full"
         onChange={productsFiltered}
       />
-      <div className="flex  gap-4 items-center justify-center">
-        <div className="mt-2">
+      <div className="flex gap-4 items-center justify-center">
+        <div className="mt-4">
           <Button text="Add Product" onClick={openAddModal} />
         </div>
         <div className="flex gap-2 mt-4 items-center justify-center">
-          <label htmlFor="sortOrder" className="">Sort by Price:</label>
+          <label htmlFor="sortOrder">Sort by Price:</label>
           <select
             id="sortOrder"
             value={sortOrder}
@@ -132,11 +153,28 @@ const ProductList = () => {
             <option value="desc">High to Low</option>
           </select>
         </div>
+
+        {/* Category Filter Dropdown */}
+        <div className="flex gap-2 mt-4 items-center justify-center">
+          <span>Filter by Category:</span>
+          <select
+            value={selectedCategory}
+            onChange={categoryChanged}
+            className="border p-2 rounded"
+          >
+            <option value="">All Categories</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 gap-x-20 ">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 gap-x-20">
         {filteredProducts.map((product) => (
-          <div key={product.id} className="card card-compact bg-base-100 shadow-xl ">
+          <div key={product.id} className="card card-compact bg-base-100 shadow-xl">
             <figure>
               <img src={product.thumbnail} alt={product.title} />
             </figure>
