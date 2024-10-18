@@ -135,7 +135,7 @@ const ProductList = () => {
           className="border border-gray-400 p-2 rounded-md w-full"
           onChange={productsFiltered}
         />
-        <div className="flex gap-4 items-center justify-center">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
           <div className="mt-4">
             <Button text="Add Product" onClick={openAddModal} />
           </div>
@@ -172,7 +172,7 @@ const ProductList = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 gap-x-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 gap-x-20">
           {filteredProducts.map((product) => (
             <div key={product.id} className="card card-compact bg-base-100 shadow-xl border border-gray-400">
               <figure>
